@@ -1,0 +1,23 @@
+/* navbar */
+nav.navbar.navbar-expand {
+  margin-bottom: 20px;
+}
+
+/* footer */
+.footer {
+  border-top: 1px #ddd solid;
+  padding-top: 5px;
+  padding-bottom: 20px;
+  margin-top: 45px;
+  color: #777;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.footer a {
+  color: #777;
+}
+
+.footer a:hover {
+  color: #000;
+}
