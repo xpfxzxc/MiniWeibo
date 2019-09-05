@@ -16,4 +16,8 @@ export class AppController {
   @Get('about')
   @Render('static/about.html')
   about() {}
+
+  @Get('register')
+  @Render('users/create.html')
+  register() {}
 }
