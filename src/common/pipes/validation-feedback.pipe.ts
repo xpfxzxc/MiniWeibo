@@ -8,7 +8,7 @@ import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
 @Injectable()
-export class ValidationFeedbackPipePipe implements PipeTransform {
+export class ValidationFeedbackPipe implements PipeTransform {
   async transform(value: any, { metatype }: ArgumentMetadata) {
     if (!metatype || !this.toValidate(metatype)) {
       return value;
@@ -17,7 +17,6 @@ export class ValidationFeedbackPipePipe implements PipeTransform {
     const object = plainToClass(metatype, value);
     const errors = await validate(object, {
       whitelist: true,
-      forbidNonWhitelisted: true,
     });
     if (errors.length > 0) {
       console.log(errors);

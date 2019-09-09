@@ -2,7 +2,7 @@ import { Controller, Post, Res, Body, UsePipes } from '@nestjs/common';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UsersService } from './users.service';
 import { Response } from 'express';
-import { ValidationFeedbackPipePipe } from '../common/pipes/validation-feedback.pipe';
+import { ValidationFeedbackPipe } from '../common/pipes/validation-feedback.pipe';
 
 @Controller('users')
 export class UsersController {
@@ -10,7 +10,7 @@ export class UsersController {
 
   @Post()
   async store(
-    @Body(ValidationFeedbackPipePipe) storeUserDto: StoreUserDto,
+    @Body(ValidationFeedbackPipe) storeUserDto: StoreUserDto,
     @Res() res: Response,
   ) {
     const id = await this.usersService.store(storeUserDto);
