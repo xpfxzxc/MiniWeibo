@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { TypeormStore } from 'connect-typeorm';
 import * as csurf from 'csurf';
 import bodyParser = require('body-parser');
+import flash = require('connect-flash');
 const nunjucks = require('nunjucks');
 
 async function bootstrap() {
@@ -41,6 +42,7 @@ async function bootstrap() {
   );
 
   app.use(csurf());
+  app.use(flash());
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
