@@ -21,4 +21,8 @@ export class UsersService {
 
     return (await this.userRepository.save(user)).id;
   }
+
+  async isUserAlreadyExist(email: string): Promise<boolean> {
+    return !!(await this.userRepository.findOne({ email: email }));
+  }
 }
