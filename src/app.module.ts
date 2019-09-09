@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from 'nestjs-config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import * as path from 'path';
+import { Session } from './session/session.entity';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import * as path from 'path';
       useFactory: (config: ConfigService) => config.get('database'),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([Session]),
     UsersModule,
   ],
   controllers: [AppController],
