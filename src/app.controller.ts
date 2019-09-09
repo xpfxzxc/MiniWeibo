@@ -1,6 +1,7 @@
-import { Controller, Get, Render } from '@nestjs/common';
+import { Controller, Get, Render, Req } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CSRFToken } from './common/decorators/csrf-token.decorator';
+import { Request } from 'express';
 
 @Controller()
 export class AppController {
@@ -20,7 +21,7 @@ export class AppController {
 
   @Get('register')
   @Render('users/create.html')
-  register(@CSRFToken() csrfToken: string) {
-    return { csrfToken };
+  register(@CSRFToken() csrfToken: string, @Req() req: Request) {
+    return { csrfToken, errors: (req as any).flash('errors') };
   }
 }

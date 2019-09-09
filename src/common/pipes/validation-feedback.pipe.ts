@@ -19,8 +19,13 @@ export class ValidationFeedbackPipe implements PipeTransform {
       whitelist: true,
     });
     if (errors.length > 0) {
-      console.log(errors);
-      throw new BadRequestException('Validation failed');
+      const errorMsg: string[] = [];
+      for (const error of errors) {
+        for (const type in error.constraints) {
+          errorMsg.push(error.constraints[type]);
+        }
+      }
+      throw new BadRequestException(errorMsg);
     }
 
     return object;

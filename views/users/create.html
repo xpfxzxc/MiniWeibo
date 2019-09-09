@@ -7,6 +7,7 @@
     <div class="card">
       <h5 class="card-header">注册</h5>
       <div class="card-body">
+        {% include "shared/_errors.html" %}
         <form method="POST" action="users">
           {% include "shared/_csrf.html" %}
           <div class="form-group">
