@@ -14,6 +14,8 @@ import { Flash } from './common/decorators/flash.decorator';
 import { Request, Response } from 'express';
 import { LoginGuard } from './common/guards/login.guard';
 import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
+import { User as UserEntity } from './users/user.entity';
+import { User } from './common/decorators/user.decorator';
 
 @Controller()
 export class AppController {
@@ -21,15 +23,21 @@ export class AppController {
 
   @Get()
   @Render('index.html')
-  index() {}
+  index(@User() user: UserEntity) {
+    return { user };
+  }
 
   @Get('help')
   @Render('static/help.html')
-  help() {}
+  help(@User() user: UserEntity) {
+    return { user };
+  }
 
   @Get('about')
   @Render('static/about.html')
-  about() {}
+  about(@User() user: UserEntity) {
+    return { user };
+  }
 
   @Get('register')
   @Render('users/create.html')
