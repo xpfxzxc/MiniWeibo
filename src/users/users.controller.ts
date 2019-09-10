@@ -17,6 +17,7 @@ import { ValidationExceptionFilter } from '../common/filters/validation-exceptio
 import { User as UserEntity } from './user.entity';
 import { User } from '../common/decorators/user.decorator';
 import { AuthenticatedGuard } from '../common/guards/authenticated.guard';
+import { CSRFToken } from '../common/decorators/csrf-token.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -39,7 +40,7 @@ export class UsersController {
   @UseGuards(AuthenticatedGuard)
   @Get(':id')
   @Render('users/show.html')
-  show(@User() user: UserEntity) {
-    return { user };
+  show(@User() user: UserEntity, @CSRFToken() csrfToken: string) {
+    return { user, csrfToken };
   }
 }

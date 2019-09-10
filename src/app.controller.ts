@@ -7,6 +7,8 @@ import {
   Post,
   UseGuards,
   UseFilters,
+  Request,
+  Redirect,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CSRFToken } from './common/decorators/csrf-token.decorator';
@@ -22,20 +24,20 @@ export class AppController {
 
   @Get()
   @Render('index.html')
-  index(@User() user: UserEntity) {
-    return { user };
+  index(@User() user: UserEntity, @CSRFToken() csrfToken: string) {
+    return { user, csrfToken };
   }
 
   @Get('help')
   @Render('static/help.html')
-  help(@User() user: UserEntity) {
-    return { user };
+  help(@User() user: UserEntity, @CSRFToken() csrfToken: string) {
+    return { user, csrfToken };
   }
 
   @Get('about')
   @Render('static/about.html')
-  about(@User() user: UserEntity) {
-    return { user };
+  about(@User() user: UserEntity, @CSRFToken() csrfToken: string) {
+    return { user, csrfToken };
   }
 
   @Get('register')
@@ -72,5 +74,11 @@ export class AppController {
   login(@Req() request, @Res() response) {
     const id = request.user.id;
     response.redirect(`users/${id}`);
+  }
+
+  @Post('logout')
+  @Redirect('/')
+  logout(@Request() request) {
+    request.logout();
   }
 }
