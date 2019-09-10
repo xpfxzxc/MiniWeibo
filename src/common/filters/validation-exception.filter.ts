@@ -3,20 +3,25 @@ import {
   Catch,
   ExceptionFilter,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-@Catch(BadRequestException)
+@Catch(BadRequestException, UnauthorizedException)
 export class ValidationExceptionFilter implements ExceptionFilter {
   constructor(
     private refillFieldOptions: {
       includes?: string[];
       excludes?: string[];
       stripCSRFToken?: boolean;
+      redirectToURL?: string | undefined | null;
     } = {},
   ) {}
 
-  async catch(exception: BadRequestException, host: ArgumentsHost) {
+  async catch(
+    exception: BadRequestException | UnauthorizedException,
+    host: ArgumentsHost,
+  ) {
     const ctx = host.switchToHttp();
     const response: Response = ctx.getResponse();
     const request: Request = ctx.getRequest();
@@ -50,12 +55,23 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     }
 
     (request as any).flash('old', old);
-    (request as any).flash('errors', (exception.getResponse() as any).message);
+
+    const message: string[] | string = (exception.getResponse() as any).message;
+    (request as any).flash(
+      'errors',
+      Array.isArray(message) ? message : [message],
+    );
 
     await new Promise(resolve => {
       (request as any).session.save(() => resolve());
     });
 
-    response.redirect('/register');
+    if (this.refillFieldOptions.redirectToURL === undefined) {
+      response.redirect(request.header('Referer') || '');
+    } else if (this.refillFieldOptions.redirectToURL !== null) {
+      response.redirect(this.refillFieldOptions.redirectToURL);
+    } else {
+      request.next();
+    }
   }
 }

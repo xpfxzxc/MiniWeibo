@@ -20,7 +20,6 @@ export class UsersController {
   @UseFilters(
     new ValidationExceptionFilter({
       includes: ['name', 'email'],
-      stripCSRFToken: false,
     }),
   )
   async store(
