@@ -21,3 +21,18 @@ nav.navbar.navbar-expand {
 .footer a:hover {
   color: #000;
 }
+
+/* user_info */
+.user_info {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.user_info h1 {
+  letter-spacing: -1px;
+}
+
+.user_info .gravatar {
+  padding-bottom: 10px;
+  margin-top: 5px;
+}
