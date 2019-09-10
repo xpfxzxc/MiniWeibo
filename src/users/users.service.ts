@@ -25,4 +25,12 @@ export class UsersService {
   async isUserAlreadyExist(email: string): Promise<boolean> {
     return !!(await this.userRepository.findOne({ email: email }));
   }
+
+  async findOne(email: string): Promise<User> {
+    return this.userRepository.findOne({ email: email });
+  }
+
+  async findOneById(id: string): Promise<User> {
+    return this.userRepository.findOne(id);
+  }
 }

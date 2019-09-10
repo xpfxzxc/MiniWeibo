@@ -9,5 +9,6 @@ import { IsUserAlreadyExistConstraint } from '../common/decorators/class-validat
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
   providers: [UsersService, IsUserAlreadyExistConstraint],
+  exports: [UsersService],
 })
 export class UsersModule {}
