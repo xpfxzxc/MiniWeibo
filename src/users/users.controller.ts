@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UsersService } from './users.service';
-import { Response } from 'express';
 import { ValidationFeedbackPipe } from '../common/pipes/validation-feedback.pipe';
 import { ValidationExceptionFilter } from '../common/filters/validation-exception.filter';
 import { User as UserEntity } from './user.entity';
@@ -31,7 +30,7 @@ export class UsersController {
   )
   async store(
     @Body(ValidationFeedbackPipe) storeUserDto: StoreUserDto,
-    @Res() res: Response,
+    @Res() res,
   ) {
     const id = await this.usersService.store(storeUserDto);
     res.redirect(`/users/${id}`);

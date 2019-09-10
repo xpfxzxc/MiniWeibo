@@ -11,7 +11,6 @@ import {
 import { AppService } from './app.service';
 import { CSRFToken } from './common/decorators/csrf-token.decorator';
 import { Flash } from './common/decorators/flash.decorator';
-import { Request, Response } from 'express';
 import { LoginGuard } from './common/guards/login.guard';
 import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 import { User as UserEntity } from './users/user.entity';
@@ -70,8 +69,8 @@ export class AppController {
   @UseGuards(LoginGuard)
   @UseFilters(new ValidationExceptionFilter({ includes: ['email'] }))
   @Post('login')
-  login(@Req() request: Request, @Res() response: Response) {
-    const id = (request as any).user.id;
+  login(@Req() request, @Res() response) {
+    const id = request.user.id;
     response.redirect(`users/${id}`);
   }
 }
