@@ -32,4 +32,8 @@ export class AppController {
       old,
     };
   }
+
+  @Get('login')
+  @Render('session/login.html')
+  login() {}
 }
