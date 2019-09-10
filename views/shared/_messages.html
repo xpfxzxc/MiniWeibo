@@ -1,0 +1,9 @@
+{% for type in ['success', 'warning', 'danger', 'info'] %}
+  {% if msg[type] %}  
+  <div class="flash_message">
+    <p class="alert alert-{{ type }}" role="alert">
+      {{ msg[type] }}
+    </p>
+  </div>
+  {% endif %}
+{% endfor %}

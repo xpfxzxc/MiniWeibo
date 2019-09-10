@@ -18,6 +18,8 @@ import { User as UserEntity } from './user.entity';
 import { User } from '../common/decorators/user.decorator';
 import { AuthenticatedGuard } from '../common/guards/authenticated.guard';
 import { CSRFToken } from '../common/decorators/csrf-token.decorator';
+import { Flash } from '../common/decorators/flash.decorator';
+import { Request } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
@@ -31,16 +33,22 @@ export class UsersController {
   )
   async store(
     @Body(ValidationFeedbackPipe) storeUserDto: StoreUserDto,
-    @Res() res,
+    @Request() request,
+    @Res() response,
   ) {
     const id = await this.usersService.store(storeUserDto);
-    res.redirect(`/users/${id}`);
+    request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
+    response.redirect(`/users/${id}`);
   }
 
   @UseGuards(AuthenticatedGuard)
   @Get(':id')
   @Render('users/show.html')
-  show(@User() user: UserEntity, @CSRFToken() csrfToken: string) {
-    return { user, csrfToken };
+  show(
+    @User() user: UserEntity,
+    @CSRFToken() csrfToken: string,
+    @Flash('msg') msg: object,
+  ) {
+    return { user, csrfToken, msg };
   }
 }

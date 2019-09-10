@@ -24,8 +24,12 @@ export class AppController {
 
   @Get()
   @Render('index.html')
-  index(@User() user: UserEntity, @CSRFToken() csrfToken: string) {
-    return { user, csrfToken };
+  index(
+    @User() user: UserEntity,
+    @CSRFToken() csrfToken: string,
+    @Flash('msg') msg: object,
+  ) {
+    return { user, csrfToken, msg };
   }
 
   @Get('help')
@@ -73,6 +77,7 @@ export class AppController {
   @Post('login')
   login(@Req() request, @Res() response) {
     const id = request.user.id;
+    request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
     response.redirect(`users/${id}`);
   }
 
@@ -80,5 +85,6 @@ export class AppController {
   @Redirect('/')
   logout(@Request() request) {
     request.logout();
+    request.flash('msg', { success: '您已成功退出登录！' });
   }
 }
