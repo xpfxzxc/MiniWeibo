@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  Unique,
+  BeforeInsert,
+} from 'typeorm';
 import md5 = require('blueimp-md5');
+import bcrypt = require('bcrypt');
 
 @Entity()
 @Unique(['email'])
@@ -15,6 +22,11 @@ export class User {
 
   @Column()
   password: string;
+
+  @BeforeInsert()
+  async beforeInsert() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 
   gravatar(size: number = 100): string {
     const hash = md5(this.email.toLowerCase().trim());
