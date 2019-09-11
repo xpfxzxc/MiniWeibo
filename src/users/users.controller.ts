@@ -3,10 +3,8 @@ import {
   Post,
   Res,
   Body,
-  UsePipes,
   UseFilters,
   Get,
-  Param,
   UseGuards,
   Render,
 } from '@nestjs/common';
@@ -36,9 +34,15 @@ export class UsersController {
     @Request() request,
     @Res() response,
   ) {
-    const id = await this.usersService.store(storeUserDto);
-    request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
-    response.redirect(`/users/${id}`);
+    const user = await this.usersService.store(storeUserDto);
+    request.login(user, err => {
+      if (err) {
+        console.log(err);
+      } else {
+        request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
+        response.redirect(`/users/${user.id}`);
+      }
+    });
   }
 
   @UseGuards(AuthenticatedGuard)

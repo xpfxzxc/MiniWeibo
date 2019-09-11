@@ -11,7 +11,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async store(storeUserDto: StoreUserDto): Promise<number> {
+  async store(storeUserDto: StoreUserDto): Promise<User> {
     const fillableFields = ['name', 'email', 'password'];
 
     const user = new User();
@@ -19,7 +19,7 @@ export class UsersService {
       user[field] = storeUserDto[field];
     }
 
-    return (await this.userRepository.save(user)).id;
+    return this.userRepository.save(user);
   }
 
   async isUserAlreadyExist(email: string): Promise<boolean> {
