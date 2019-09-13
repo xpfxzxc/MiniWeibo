@@ -16,7 +16,18 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migration:create": "ts-node node_modules/typeorm/cli.js migration:create -d src/migrations/ -n ",
+    "migration:generate": "ts-node node_modules/typeorm/cli.js migration:generate -d src/migrations/ -f src/config/database.ts -n ",
+    "migration:run": "ts-node node_modules/typeorm/cli.js migration:run -f src/config/database.ts",
+    "migration:revert": "ts-node node_modules/typeorm/cli.js migration:revert -f src/config/database.ts",
+    "seed:create": "ts-node node_modules/typeorm/cli.js migration:create -c seed -d src/seeds/ -n ",
+    "seed:run": "ts-node node_modules/typeorm/cli.js migration:run -c seed -f src/config/database.ts",
+    "seed:revert": "ts-node node_modules/typeorm/cli.js migration:revert -c seed -f src/config/database.ts",
+    "seed:reseed": "npm run seed:revert && npm run seed:run",
+    "migration:clear": "npm run seed:revert && npm run migration:revert",
+    "migration:refresh": "npm run migration:clear && npm run migration:run",
+    "migration:refreshAndSeed": "npm run migration:refresh && npm run seed:run"
   },
   "dependencies": {
     "@nestjs/common": "^6.0.0",

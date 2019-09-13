@@ -13,7 +13,7 @@ import { RedirectIfAuthenticatedMiddleware } from './common/middlewares/redirect
   imports: [
     ConfigModule.load(path.resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
     TypeOrmModule.forRootAsync({
-      useFactory: (config: ConfigService) => config.get('database'),
+      useFactory: (config: ConfigService) => config.get('database')[0],
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([Session]),

@@ -10,7 +10,8 @@ import * as csurf from 'csurf';
 import bodyParser = require('body-parser');
 import flash = require('connect-flash');
 import passport = require('passport');
-const nunjucks = require('nunjucks');
+import methodOverride = require('method-override');
+import nunjucks = require('nunjucks');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -28,6 +29,16 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
   app.use(bodyParser.urlencoded({ extended: false }));
+
+  app.use(
+    methodOverride(function(req, res) {
+      if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+        const method = req.body._method;
+        delete req.body._method;
+        return method;
+      }
+    }),
+  );
 
   app.use(
     session({

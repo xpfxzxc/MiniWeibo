@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import md5 = require('blueimp-md5');
 import bcrypt = require('bcrypt');
@@ -25,6 +26,11 @@ export class User {
 
   @BeforeInsert()
   async beforeInsert() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  @BeforeUpdate()
+  async beforeUpdate() {
     this.password = await bcrypt.hash(this.password, 10);
   }
 

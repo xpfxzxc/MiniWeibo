@@ -7,6 +7,10 @@ import {
   Get,
   UseGuards,
   Render,
+  Patch,
+  Param,
+  ParseIntPipe,
+  ForbiddenException,
 } from '@nestjs/common';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UsersService } from './users.service';
@@ -18,6 +22,7 @@ import { AuthenticatedGuard } from '../common/guards/authenticated.guard';
 import { CSRFToken } from '../common/decorators/csrf-token.decorator';
 import { Flash } from '../common/decorators/flash.decorator';
 import { Request } from '@nestjs/common';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -54,5 +59,41 @@ export class UsersController {
     @Flash('msg') msg: object,
   ) {
     return { user, csrfToken, msg };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get(':id/edit')
+  @Render('users/edit.html')
+  edit(
+    @User() user: UserEntity,
+    @CSRFToken() csrfToken: string,
+    @Flash('errors') errors: string[],
+    @Flash('msg') msg: object,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    if (user.id !== id) {
+      throw new ForbiddenException();
+    }
+
+    return { user, csrfToken, errors, msg };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @UseFilters(new ValidationExceptionFilter({ includes: [] }))
+  @Patch(':id')
+  async update(
+    @Body(ValidationFeedbackPipe) updateUserDto: UpdateUserDto,
+    @Request() request,
+    @Res() response,
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id,
+  ) {
+    if (user.id !== id) {
+      throw new ForbiddenException();
+    }
+
+    await this.usersService.update(user, updateUserDto);
+    request.flash('msg', { success: '个人资料更新成功！' });
+    response.redirect(`/users/${user.id}/edit`);
   }
 }
