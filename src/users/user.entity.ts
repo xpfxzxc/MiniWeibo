@@ -29,11 +29,6 @@ export class User {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  @BeforeUpdate()
-  async beforeUpdate() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-
   gravatar(size: number = 100): string {
     const hash = md5(this.email.toLowerCase().trim());
     return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=identicon`;
