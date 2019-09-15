@@ -58,7 +58,7 @@ export class UsersController {
   @Get(':id')
   @Render('users/show.html')
   async show(
-    @Param('id') id,
+    @Param('id', ParseIntPipe) id: number,
     @User() user: UserEntity,
     @CSRFToken() csrfToken: string,
     @Flash('msg') msg: object,
@@ -91,7 +91,7 @@ export class UsersController {
     @Request() request,
     @Res() response,
     @User() user: UserEntity,
-    @Param('id', ParseIntPipe) id,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     if (user.id !== id) {
       throw new ForbiddenException();

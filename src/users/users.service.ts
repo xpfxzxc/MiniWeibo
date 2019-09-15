@@ -32,7 +32,7 @@ export class UsersService {
     return this.userRepository.findOne({ email: email });
   }
 
-  async findOneById(id: string): Promise<User> {
+  async findOneById(id: number): Promise<User> {
     return this.userRepository.findOne(id);
   }
 
