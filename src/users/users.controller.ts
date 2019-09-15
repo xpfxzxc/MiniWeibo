@@ -27,6 +27,7 @@ import { Request } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IsAdminGuard } from '../common/guards/is-admin.guard';
 import { NotActionToSelfGuard } from '../common/guards/not-action-to-self.guard';
+import { ActionToSelfGuard } from '../common/guards/action-to-self.guard';
 
 @Controller('users')
 export class UsersController {
@@ -66,7 +67,7 @@ export class UsersController {
     return { user, u: await this.usersService.findOneById(id), csrfToken, msg };
   }
 
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthenticatedGuard, ActionToSelfGuard)
   @Get(':id/edit')
   @Render('users/edit.html')
   edit(
@@ -76,14 +77,10 @@ export class UsersController {
     @Flash('msg') msg: object,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    if (user.id !== id) {
-      throw new ForbiddenException();
-    }
-
     return { user, csrfToken, errors, msg };
   }
 
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthenticatedGuard, ActionToSelfGuard)
   @UseFilters(new ValidationExceptionFilter({ includes: [] }))
   @Patch(':id')
   async update(
@@ -93,10 +90,6 @@ export class UsersController {
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    if (user.id !== id) {
-      throw new ForbiddenException();
-    }
-
     await this.usersService.update(user, updateUserDto);
     request.flash('msg', { success: '个人资料更新成功！' });
     response.redirect(`/users/${user.id}/edit`);
