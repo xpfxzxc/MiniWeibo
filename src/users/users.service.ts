@@ -43,4 +43,15 @@ export class UsersService {
     }
     await this.userRepository.save(user);
   }
+
+  async paginate(page: number = 1, limit: number = 10): Promise<User[]> {
+    return this.userRepository.find({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+  }
+
+  async countAll(): Promise<number> {
+    return this.userRepository.count();
+  }
 }

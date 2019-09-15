@@ -1,0 +1,13 @@
+<ul class="pagination">
+  <li class="page-item {{ 'disabled' if page === 1 }}">
+    <a class="page-link" href="{{ '#' if page === 1 else '/users?page=' + (page-1) + '&limit=' + limit }}">&lt;</a>
+  </li>
+  {% for item in range(1, totalPages + 1) %}
+    <li class="page-item {{ 'active' if loop.index == page }}">
+      <a class="page-link" href="{{ '#' if loop.index == page else '/' + resources + '?page=' + loop.index + '&limit=' + limit }}">{{ loop.index }}</a>
+    </li>
+  {% endfor %}
+  <li class="page-item {{ 'disabled' if page == totalPages }}">
+    <a class="page-link" href="{{ '#' if page == totalPage else '/' + resources + '?page=' + (page+1) + '&limit=' + limit }}">&gt;</a>
+  </li>
+</ul>

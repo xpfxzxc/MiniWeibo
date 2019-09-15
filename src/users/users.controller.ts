@@ -11,6 +11,7 @@ import {
   Param,
   ParseIntPipe,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UsersService } from './users.service';
@@ -53,12 +54,13 @@ export class UsersController {
   @UseGuards(AuthenticatedGuard)
   @Get(':id')
   @Render('users/show.html')
-  show(
+  async show(
+    @Param('id') id,
     @User() user: UserEntity,
     @CSRFToken() csrfToken: string,
     @Flash('msg') msg: object,
   ) {
-    return { user, csrfToken, msg };
+    return { user, u: await this.usersService.findOneById(id), csrfToken, msg };
   }
 
   @UseGuards(AuthenticatedGuard)
@@ -95,5 +97,42 @@ export class UsersController {
     await this.usersService.update(user, updateUserDto);
     request.flash('msg', { success: '个人资料更新成功！' });
     response.redirect(`/users/${user.id}/edit`);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get()
+  async index(
+    @User() user: UserEntity,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @CSRFToken() csrfToken: string,
+    @Res() response,
+  ) {
+    if (
+      !Number.isInteger(+page) ||
+      !Number.isInteger(+limit) ||
+      +page <= 0 ||
+      +limit > 100
+    ) {
+      response.redirect('/users');
+      return;
+    }
+
+    const totalUsers = await this.usersService.countAll();
+    const totalPages = Math.ceil(totalUsers / +limit);
+    if (+page > totalPages) {
+      response.redirect('/users');
+      return;
+    }
+
+    return response.render('users/index.html', {
+      user,
+      csrfToken,
+      users: await this.usersService.paginate(+page, +limit),
+      totalUsers,
+      totalPages,
+      page: +page,
+      limit: +limit,
+    });
   }
 }

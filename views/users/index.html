@@ -1,0 +1,24 @@
+{% extends "layouts/_base.html" %}
+
+{% set title = '所有用户' %}
+
+{% block content %}
+  <div class="col-md-8 offset-md-2">
+    <h1 class="mb-4 text-center">所有用户</h1>
+    <div class="list-group list-group-flush">
+      {% for u in users %}
+        <div class="list-group-item">
+          <img class="mr-3" src="{{ u.gravatar() }}" alt="{{ u.name }}" width="32">
+          <a href="/users/{{ u.id }}">
+            {{ u.name }}
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-3">
+      {% set resources = 'users' %}
+      {% include "shared/_pagination.html" %}
+    </div>
+  </div>
+{% endblock %}
