@@ -24,6 +24,13 @@ export class User {
   @Column()
   password: string;
 
+  @Column({
+    name: 'is_admin',
+    type: 'boolean',
+    default: false,
+  })
+  isAdmin: boolean;
+
   @BeforeInsert()
   async beforeInsert() {
     this.password = await bcrypt.hash(this.password, 10);

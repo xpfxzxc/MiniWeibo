@@ -18,6 +18,7 @@ export class userTableSeeder1568433979902 implements MigrationInterface {
     const firstUser = await userRepository.findOne(1);
     firstUser.name = 'Axion';
     firstUser.email = 'axion@example.com';
+    firstUser.isAdmin = true;
     await userRepository.save(firstUser);
   }
 

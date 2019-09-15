@@ -54,4 +54,13 @@ export class UsersService {
   async countAll(): Promise<number> {
     return this.userRepository.count();
   }
+
+  async destroy(id: number): Promise<boolean> {
+    const userToRemove = await this.userRepository.findOne(id);
+    if (userToRemove) {
+      this.userRepository.remove(userToRemove);
+      return true;
+    }
+    return false;
+  }
 }

@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
   ForbiddenException,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UsersService } from './users.service';
@@ -24,6 +25,8 @@ import { CSRFToken } from '../common/decorators/csrf-token.decorator';
 import { Flash } from '../common/decorators/flash.decorator';
 import { Request } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { IsAdminGuard } from '../common/guards/is-admin.guard';
+import { NotActionToSelfGuard } from '../common/guards/not-action-to-self.guard';
 
 @Controller('users')
 export class UsersController {
@@ -106,6 +109,7 @@ export class UsersController {
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @CSRFToken() csrfToken: string,
+    @Flash('msg') msg: object,
     @Res() response,
   ) {
     if (
@@ -127,6 +131,7 @@ export class UsersController {
 
     return response.render('users/index.html', {
       user,
+      msg,
       csrfToken,
       users: await this.usersService.paginate(+page, +limit),
       totalUsers,
@@ -134,5 +139,18 @@ export class UsersController {
       page: +page,
       limit: +limit,
     });
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthenticatedGuard, IsAdminGuard, NotActionToSelfGuard)
+  async destroy(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() request,
+    @Res() response,
+  ) {
+    if (await this.usersService.destroy(id)) {
+      request.flash('msg', { success: '成功删除用户' });
+    }
+    response.redirect(request.header('Referer'));
   }
 }

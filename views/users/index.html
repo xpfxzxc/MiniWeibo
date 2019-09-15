@@ -1,3 +1,5 @@
+{% import "shared/_field.html" as field %}
+
 {% extends "layouts/_base.html" %}
 
 {% set title = '所有用户' %}
@@ -12,6 +14,14 @@
           <a href="/users/{{ u.id }}">
             {{ u.name }}
           </a>
+          
+            <div class="float-right">
+              <form action="/users/{{ u.id }}" method="POST">
+                {{ field.method('DELETE') }}
+                {% include "shared/_csrf.html" %}
+                <button type="submit" class="btn btn-danger btn-sm">删除</button>
+              </form>
+            </div>
         </div>
       {% endfor %}
     </div>
