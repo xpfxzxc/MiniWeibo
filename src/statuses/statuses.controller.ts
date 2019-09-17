@@ -6,6 +6,9 @@ import {
   Request,
   Res,
   UseGuards,
+  Param,
+  ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { StatusesService } from './statuses.service';
 import { ValidationFeedbackPipe } from '../common/pipes/validation-feedback.pipe';
@@ -30,6 +33,19 @@ export class StatusesController {
   ) {
     await this.statusesService.store(user, storeStatusDto);
     request.flash('msg', { success: '发布成功！' });
+    response.redirect('back');
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Delete(':id')
+  async destroy(
+    @Param('id', ParseIntPipe) id: number,
+    @Request() request,
+    @Res() response,
+  ) {
+    if (await this.statusesService.destroy(id)) {
+      request.flash('msg', { success: '微博已被成功删除！' });
+    }
     response.redirect('back');
   }
 }

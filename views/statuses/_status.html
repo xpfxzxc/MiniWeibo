@@ -1,3 +1,5 @@
+{% import "shared/_field.html" as field %}
+
 <div class="media mt-4 mb-4">
   <a href="/users/{{ u.id }}">
     <img src="{{ u.gravatar(60) }}" class="mr-3 gravatar" alt="{{ u.name }}">
@@ -9,4 +11,11 @@
     </h5>
     <p class="text-break">{{ status.content }}</p>
   </div>
+  {% if user.id === u.id %}
+    <form action="/statuses/{{ status.id }}" method="POST" onsubmit="return confirm('您确定要删除本条微博吗？')">
+      {{ field.method('DELETE') }}
+      {% include "shared/_csrf.html" %}
+      <button type="submit" class="btn btn-sm btn-danger">删除</button>
+    </form>
+  {% endif %}
 </div>

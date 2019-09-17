@@ -41,4 +41,13 @@ export class StatusesService {
     status.user = user;
     await this.statusRepository.save(status);
   }
+
+  async destroy(id: number): Promise<boolean> {
+    const statusToRemove = await this.statusRepository.findOne(id);
+    if (statusToRemove) {
+      await this.statusRepository.remove(statusToRemove);
+      return true;
+    }
+    return false;
+  }
 }
