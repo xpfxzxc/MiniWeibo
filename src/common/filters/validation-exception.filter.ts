@@ -62,10 +62,6 @@ export class ValidationExceptionFilter implements ExceptionFilter {
       Array.isArray(message) ? message : [message],
     );
 
-    await new Promise(resolve => {
-      (request as any).session.save(() => resolve());
-    });
-
     if (this.refillFieldOptions.redirectToURL === undefined) {
       response.redirect(request.header('Referer') || '');
     } else if (this.refillFieldOptions.redirectToURL !== null) {

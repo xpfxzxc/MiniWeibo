@@ -53,6 +53,16 @@ async function bootstrap() {
     }),
   );
 
+  app.use(function(req, res, next) {
+    const redirect = res.redirect;
+    res.redirect = function(...args) {
+      req.session.save(() => {
+        redirect.apply(res, args);
+      });
+    };
+    next();
+  });
+
   app.use(csurf());
 
   app.use(passport.initialize());
