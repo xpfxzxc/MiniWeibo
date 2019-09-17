@@ -15,6 +15,7 @@
             {{ u.name }}
           </a>
           
+          {% if user.isAdmin and user.id !== u.id %}
             <div class="float-right">
               <form action="/users/{{ u.id }}" method="POST">
                 {{ field.method('DELETE') }}
@@ -22,6 +23,7 @@
                 <button type="submit" class="btn btn-danger btn-sm">删除</button>
               </form>
             </div>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
