@@ -4,9 +4,10 @@ import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { IsUserAlreadyExistConstraint } from '../common/decorators/class-validator/is-user-already-exist.decorator';
+import { StatusesModule } from '../statuses/statuses.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), StatusesModule],
   controllers: [UsersController],
   providers: [UsersService, IsUserAlreadyExistConstraint],
   exports: [UsersService],

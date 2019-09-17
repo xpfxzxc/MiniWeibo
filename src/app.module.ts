@@ -6,8 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { Session } from './session/session.entity';
 import { AuthModule } from './auth/auth.module';
-import * as path from 'path';
 import { RedirectIfAuthenticatedMiddleware } from './common/middlewares/redirect-if-authenticated.middleware';
+import { StatusesModule } from './statuses/statuses.module';
+import * as path from 'path';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { RedirectIfAuthenticatedMiddleware } from './common/middlewares/redirect
     TypeOrmModule.forFeature([Session]),
     UsersModule,
     AuthModule,
+    StatusesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

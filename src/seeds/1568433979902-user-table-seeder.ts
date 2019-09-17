@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner, TableForeignKey } from 'typeorm';
 import { User } from '../users/user.entity';
 import * as faker from 'faker';
 
@@ -23,6 +23,16 @@ export class userTableSeeder1568433979902 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
-    queryRunner.clearTable('user');
+    const foreignKey = new TableForeignKey({
+      name: 'FK_89f35d3f89e883fb31272a99ddd',
+      columnNames: ['user_id'],
+      referencedTableName: 'user',
+      referencedColumnNames: ['id'],
+      onDelete: 'CASCADE',
+    });
+
+    await queryRunner.dropForeignKey('status', foreignKey);
+    await queryRunner.clearTable('user');
+    await queryRunner.createForeignKey('status', foreignKey);
   }
 }

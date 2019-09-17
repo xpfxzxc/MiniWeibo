@@ -9,5 +9,20 @@
         {% include "shared/_user-info.html" %}
       </section>
     </div>
+    <div class="row">
+      {% if statuses.length > 0 %}  
+        <section class="status">
+          <ul class="list-unstyled">
+            {% for status in statuses %}
+              {% include "statuses/_status.html" %}
+            {% endfor %}
+          </ul>
+        </section>
+        {% set urlPrefix = 'users/' + u.id %}
+        {% include "shared/_pagination.html" %}
+      {% else %}
+        没有数据！
+      {% endif %}
+    </div>
   </div>
 {% endblock %}

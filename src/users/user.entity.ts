@@ -4,10 +4,11 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   BeforeInsert,
-  BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import md5 = require('blueimp-md5');
 import bcrypt = require('bcrypt');
+import { Status } from '../statuses/status.entity';
 
 @Entity()
 @Unique(['email'])
@@ -30,6 +31,9 @@ export class User {
     default: false,
   })
   isAdmin: boolean;
+
+  @OneToMany(type => Status, status => status.user)
+  statuses: Status[];
 
   @BeforeInsert()
   async beforeInsert() {

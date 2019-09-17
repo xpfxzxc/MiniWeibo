@@ -10,7 +10,6 @@ import {
   Patch,
   Param,
   ParseIntPipe,
-  ForbiddenException,
   Query,
   Delete,
 } from '@nestjs/common';
@@ -28,10 +27,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { IsAdminGuard } from '../common/guards/is-admin.guard';
 import { NotActionToSelfGuard } from '../common/guards/not-action-to-self.guard';
 import { ActionToSelfGuard } from '../common/guards/action-to-self.guard';
+import { StatusesService } from '../statuses/statuses.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly statusesService: StatusesService,
+  ) {}
 
   @Post()
   @UseFilters(
@@ -62,9 +65,44 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserEntity,
     @CSRFToken() csrfToken: string,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '5',
     @Flash('msg') msg: object,
+    @Res() response,
   ) {
-    return { user, u: await this.usersService.findOneById(id), csrfToken, msg };
+    if (
+      !Number.isInteger(+page) ||
+      !Number.isInteger(+limit) ||
+      +page <= 0 ||
+      +limit > 100
+    ) {
+      response.redirect(`/users/${id}`);
+      return;
+    }
+
+    const totalStatuses = await this.statusesService.countAllForUser(id);
+    const totalPages = Math.ceil(totalStatuses / +limit);
+    if (+page > totalPages) {
+      response.redirect(`/users/${id}`);
+      return;
+    }
+
+    const statuses = await this.statusesService.paginateForUser(
+      id,
+      +page,
+      +limit,
+    );
+    return {
+      user,
+      msg,
+      csrfToken,
+      u: await this.usersService.findOneById(id),
+      statuses,
+      totalStatuses,
+      totalPages,
+      page: +page,
+      limit: +limit,
+    };
   }
 
   @UseGuards(AuthenticatedGuard, ActionToSelfGuard)
