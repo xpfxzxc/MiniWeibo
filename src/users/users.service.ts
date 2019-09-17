@@ -4,6 +4,8 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { StatusesService } from '../statuses/statuses.service';
+import { Status } from '../statuses/status.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -11,6 +13,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly statusesService: StatusesService,
   ) {}
 
   async store(storeUserDto: StoreUserDto): Promise<User> {
@@ -62,5 +65,17 @@ export class UsersService {
       return true;
     }
     return false;
+  }
+
+  async feed(
+    userId: number,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<Status[]> {
+    return this.statusesService.paginateForUser(userId, page, limit);
+  }
+
+  async countAllFeedsById(userId: number): Promise<number> {
+    return this.statusesService.countAllForUser(userId);
   }
 }

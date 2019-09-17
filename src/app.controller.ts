@@ -9,6 +9,7 @@ import {
   UseFilters,
   Request,
   Redirect,
+  Query,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CSRFToken } from './common/decorators/csrf-token.decorator';
@@ -17,21 +18,62 @@ import { LoginGuard } from './common/guards/login.guard';
 import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 import { User as UserEntity } from './users/user.entity';
 import { User } from './common/decorators/user.decorator';
+import { UsersService } from './users/users.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get()
   @Render('index.html')
-  index(
+  async index(
     @User() user: UserEntity,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
     @CSRFToken() csrfToken: string,
     @Flash('msg') msg: object,
     @Flash('errors') errors,
     @Flash('old') old,
+    @Request() request,
+    @Res() response,
   ) {
-    return { user, csrfToken, msg, errors, old };
+    if (!request.isAuthenticated()) {
+      return { user, csrfToken, msg };
+    }
+
+    if (
+      !Number.isInteger(+page) ||
+      !Number.isInteger(+limit) ||
+      +page <= 0 ||
+      +limit > 100
+    ) {
+      response.redirect(`/`);
+      return;
+    }
+
+    const totalFeeds = await this.usersService.countAllFeedsById(user.id);
+    const totalPages = Math.ceil(totalFeeds / +limit);
+    if (+page > totalPages) {
+      response.redirect(`/`);
+      return;
+    }
+
+    const feedItems = await this.usersService.feed(user.id, +page, +limit);
+    return {
+      user,
+      csrfToken,
+      msg,
+      errors,
+      old,
+      feedItems,
+      totalFeeds,
+      totalPages,
+      page: +page,
+      limit: +limit,
+    };
   }
 
   @Get('help')
@@ -80,7 +122,7 @@ export class AppController {
   login(@Req() request, @Res() response) {
     const id = request.user.id;
     request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
-    response.redirect(`users/${id}`);
+    response.redirect(`/`);
   }
 
   @Post('logout')

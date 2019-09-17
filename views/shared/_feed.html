@@ -1,0 +1,14 @@
+{% if feedItems.length %}
+  <ul class="list-unstyled">
+    {% for status in feedItems %}
+      {% set u = user %}
+      {% include "statuses/_status.html" %}
+    {% endfor %}
+  </ul>
+  <div class="mt-5">
+    {% set urlPrefix = '' %}
+    {% include "shared/_pagination.html" %}
+  </div>
+{% else %}
+  没有数据！    
+{% endif %}
