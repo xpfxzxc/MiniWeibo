@@ -30,6 +30,6 @@ export class StatusesController {
   ) {
     await this.statusesService.store(user, storeStatusDto);
     request.flash('msg', { success: '发布成功！' });
-    response.redirect(request.header('Referer'));
+    response.redirect('back');
   }
 }

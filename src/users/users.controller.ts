@@ -182,6 +182,6 @@ export class UsersController {
     if (await this.usersService.destroy(id)) {
       request.flash('msg', { success: '成功删除用户' });
     }
-    response.redirect(request.header('Referer'));
+    response.redirect('back');
   }
 }

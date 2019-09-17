@@ -63,7 +63,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     );
 
     if (this.refillFieldOptions.redirectToURL === undefined) {
-      response.redirect(request.header('Referer') || '');
+      response.redirect('back');
     } else if (this.refillFieldOptions.redirectToURL !== null) {
       response.redirect(this.refillFieldOptions.redirectToURL);
     } else {
