@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Status } from './status.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { StoreStatusDto } from './dto/store-status.dto';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class StatusesService {
@@ -31,5 +33,12 @@ export class StatusesService {
       .skip((page - 1) * limit)
       .take(limit)
       .getMany();
+  }
+
+  async store(user: User, storeStatusDto: StoreStatusDto): Promise<void> {
+    const status = new Status();
+    status.content = storeStatusDto.content;
+    status.user = user;
+    await this.statusRepository.save(status);
   }
 }

@@ -28,8 +28,10 @@ export class AppController {
     @User() user: UserEntity,
     @CSRFToken() csrfToken: string,
     @Flash('msg') msg: object,
+    @Flash('errors') errors,
+    @Flash('old') old,
   ) {
-    return { user, csrfToken, msg };
+    return { user, csrfToken, msg, errors, old };
   }
 
   @Get('help')

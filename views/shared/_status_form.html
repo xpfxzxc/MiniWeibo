@@ -1,0 +1,10 @@
+{% include "shared/_errors.html" %}
+<form action="/statuses" method="POST">
+  {% include "shared/_csrf.html" %}
+  <div class="form-group">
+    <textarea class="form-control" name="content" rows="3" placeholder="聊聊新鲜事儿...">{{ old['content'] }}</textarea>
+  </div>
+  <div class="text-right">
+    <button type="submit" class="btn btn-primary pull-right">发布</button>
+  </div>
+</form>
