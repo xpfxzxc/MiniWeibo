@@ -85,16 +85,16 @@ export class UsersService {
   async countAllFollowingsById(id: number): Promise<number> {
     return this.userRepository
       .createQueryBuilder('user')
-      .innerJoin('user.followings', 'following')
-      .where('following.id = :id', { id })
+      .innerJoin('user.followers', 'follower')
+      .where('follower.id = :id', { id })
       .getCount();
   }
 
   async countAllFollowersById(id: number): Promise<number> {
     return this.userRepository
       .createQueryBuilder('user')
-      .innerJoin('user.followers', 'follower')
-      .where('follower.id = :id', { id })
+      .innerJoin('user.followings', 'following')
+      .where('following.id = :id', { id })
       .getCount();
   }
 
@@ -104,8 +104,8 @@ export class UsersService {
   ): Promise<Pagination<User>> {
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
-      .innerJoin('user.followings', 'following')
-      .where('following.id = :id', { id });
+      .innerJoin('user.followers', 'follower')
+      .where('follower.id = :id', { id });
     return paginate<User>(queryBuilder, options);
   }
 
@@ -115,8 +115,8 @@ export class UsersService {
   ): Promise<Pagination<User>> {
     const queryBuilder = this.userRepository
       .createQueryBuilder('user')
-      .innerJoin('user.followers', 'follower')
-      .where('follower.id = :id', { id });
+      .innerJoin('user.followings', 'following')
+      .where('following.id = :id', { id });
     return paginate<User>(queryBuilder, options);
   }
 }
