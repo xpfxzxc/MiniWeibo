@@ -4,6 +4,11 @@ import { Status } from './status.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StoreStatusDto } from './dto/store-status.dto';
 import { User } from '../users/user.entity';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class StatusesService {
@@ -22,17 +27,14 @@ export class StatusesService {
 
   async paginateForUser(
     userId: number,
-    page: number,
-    limit: number,
-  ): Promise<Status[]> {
-    return this.statusRepository
-      .createQueryBuilder('status')
+    options: IPaginationOptions,
+  ): Promise<Pagination<Status>> {
+    const queryBuilder = this.statusRepository.createQueryBuilder('status');
+    queryBuilder
       .innerJoin('status.user', 'user')
       .where('status.user_id = :id', { id: userId })
-      .orderBy('status.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getMany();
+      .orderBy('status.createdAt', 'DESC');
+    return paginate<Status>(queryBuilder, options);
   }
 
   async store(user: User, storeStatusDto: StoreStatusDto): Promise<void> {

@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
   Query,
   Delete,
+  ValidationPipe,
 } from '@nestjs/common';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UsersService } from './users.service';
@@ -28,6 +29,10 @@ import { IsAdminGuard } from '../common/guards/is-admin.guard';
 import { NotActionToSelfGuard } from '../common/guards/not-action-to-self.guard';
 import { ActionToSelfGuard } from '../common/guards/action-to-self.guard';
 import { StatusesService } from '../statuses/statuses.service';
+import { IndexUserDto } from './dto/index-user.dto';
+import { PaginationQueryExceptionFilter } from '../common/filters/pagination-query-exception.filter';
+import { PaginationQueryException } from '../common/exceptions/pagination-query.exception';
+import { ShowUserDto } from './dto/show-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -59,39 +64,34 @@ export class UsersController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @UseFilters(PaginationQueryExceptionFilter)
   @Get(':id')
   @Render('users/show.html')
   async show(
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserEntity,
     @CSRFToken() csrfToken: string,
-    @Query('page') page: string = '1',
-    @Query('limit') limit: string = '5',
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        exceptionFactory: errors => new PaginationQueryException(),
+      }),
+    )
+    showUserDto: ShowUserDto,
     @Flash('msg') msg: object,
-    @Res() response,
   ) {
-    if (
-      !Number.isInteger(+page) ||
-      !Number.isInteger(+limit) ||
-      +page <= 0 ||
-      +limit > 100
-    ) {
-      response.redirect(`/users/${id}`);
-      return;
+    const { page = 1, limit = 5 } = showUserDto;
+    const {
+      items: statuses,
+      itemCount: statusCount,
+      totalItems: totalStatuses,
+      pageCount: totalPages,
+    } = await this.statusesService.paginateForUser(id, { page, limit });
+
+    if (page !== 1 && statusCount === 0) {
+      throw new PaginationQueryException();
     }
 
-    const totalStatuses = await this.statusesService.countAllForUser(id);
-    const totalPages = Math.ceil(totalStatuses / +limit);
-    if (+page > totalPages) {
-      response.redirect(`/users/${id}`);
-      return;
-    }
-
-    const statuses = await this.statusesService.paginateForUser(
-      id,
-      +page,
-      +limit,
-    );
     return {
       user,
       msg,
@@ -100,8 +100,8 @@ export class UsersController {
       statuses,
       totalStatuses,
       totalPages,
-      page: +page,
-      limit: +limit,
+      page,
+      limit,
       totalFollowings: await this.usersService.countAllFollowingsById(id),
       totalFollowers: await this.usersService.countAllFollowersById(id),
     };
@@ -115,7 +115,6 @@ export class UsersController {
     @CSRFToken() csrfToken: string,
     @Flash('errors') errors: string[],
     @Flash('msg') msg: object,
-    @Param('id', ParseIntPipe) id: number,
   ) {
     return { user, csrfToken, errors, msg };
   }
@@ -136,42 +135,43 @@ export class UsersController {
   }
 
   @UseGuards(AuthenticatedGuard)
+  @UseFilters(PaginationQueryExceptionFilter)
   @Get()
+  @Render('users/index.html')
   async index(
     @User() user: UserEntity,
-    @Query('page') page: string = '1',
-    @Query('limit') limit: string = '10',
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        exceptionFactory: errors => new PaginationQueryException(),
+      }),
+    )
+    indexUserDto: IndexUserDto,
     @CSRFToken() csrfToken: string,
     @Flash('msg') msg: object,
-    @Res() response,
   ) {
-    if (
-      !Number.isInteger(+page) ||
-      !Number.isInteger(+limit) ||
-      +page <= 0 ||
-      +limit > 100
-    ) {
-      response.redirect('/users');
-      return;
+    const { page = 1, limit = 10 } = indexUserDto;
+    const {
+      items: users,
+      itemCount: userCount,
+      totalItems: totalUsers,
+      pageCount: totalPages,
+    } = await this.usersService.paginate({ page, limit });
+
+    if (page !== 1 && userCount === 0) {
+      throw new PaginationQueryException();
     }
 
-    const totalUsers = await this.usersService.countAll();
-    const totalPages = Math.ceil(totalUsers / +limit);
-    if (+page > totalPages) {
-      response.redirect('/users');
-      return;
-    }
-
-    return response.render('users/index.html', {
+    return {
       user,
       msg,
       csrfToken,
-      users: await this.usersService.paginate(+page, +limit),
+      users,
       totalUsers,
       totalPages,
-      page: +page,
-      limit: +limit,
-    });
+      page,
+      limit,
+    };
   }
 
   @Delete(':id')

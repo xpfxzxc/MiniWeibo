@@ -6,6 +6,11 @@ import { StoreUserDto } from './dto/store-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { StatusesService } from '../statuses/statuses.service';
 import { Status } from '../statuses/status.entity';
+import {
+  paginate,
+  Pagination,
+  IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -47,11 +52,10 @@ export class UsersService {
     await this.userRepository.save(user);
   }
 
-  async paginate(page: number = 1, limit: number = 10): Promise<User[]> {
-    return this.userRepository.find({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+  async paginate(options: IPaginationOptions): Promise<Pagination<User>> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    queryBuilder.orderBy('user.id', 'DESC');
+    return paginate<User>(queryBuilder, options);
   }
 
   async countAll(): Promise<number> {
@@ -68,11 +72,10 @@ export class UsersService {
   }
 
   async feed(
-    userId: number,
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<Status[]> {
-    return this.statusesService.paginateForUser(userId, page, limit);
+    id: number,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Status>> {
+    return this.statusesService.paginateForUser(id, options);
   }
 
   async countAllFeedsById(userId: number): Promise<number> {

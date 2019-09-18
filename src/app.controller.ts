@@ -10,6 +10,7 @@ import {
   Request,
   Redirect,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CSRFToken } from './common/decorators/csrf-token.decorator';
@@ -20,6 +21,9 @@ import { User as UserEntity } from './users/user.entity';
 import { User } from './common/decorators/user.decorator';
 import { UsersService } from './users/users.service';
 import { StatusesService } from './statuses/statuses.service';
+import { PaginationQueryExceptionFilter } from './common/filters/pagination-query-exception.filter';
+import { PaginationQueryException } from './common/exceptions/pagination-query.exception';
+import { IndexDto } from './appDto/index.dto';
 
 @Controller()
 export class AppController {
@@ -29,42 +33,40 @@ export class AppController {
     private readonly statusesService: StatusesService,
   ) {}
 
+  @UseFilters(PaginationQueryExceptionFilter)
   @Get()
   @Render('index.html')
   async index(
     @User() user: UserEntity,
-    @Query('page') page: string = '1',
-    @Query('limit') limit: string = '10',
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        exceptionFactory: errors => new PaginationQueryException(),
+      }),
+    )
+    indexDto: IndexDto,
     @CSRFToken() csrfToken: string,
     @Flash('msg') msg: object,
     @Flash('errors') errors,
     @Flash('old') old,
     @Request() request,
-    @Res() response,
   ) {
     if (!request.isAuthenticated()) {
       return { user, csrfToken, msg };
     }
 
-    if (
-      !Number.isInteger(+page) ||
-      !Number.isInteger(+limit) ||
-      +page <= 0 ||
-      +limit > 100
-    ) {
-      response.redirect(`/`);
-      return;
+    const { page = 1, limit = 10 } = indexDto;
+    const {
+      items: feedItems,
+      itemCount: feedCount,
+      totalItems: totalFeeds,
+      pageCount: totalPages,
+    } = await this.usersService.feed(user.id, { page, limit });
+
+    if (page !== 1 && feedCount === 0) {
+      throw new PaginationQueryException();
     }
 
-    const totalFeeds = await this.usersService.countAllFeedsById(user.id);
-    const totalPages = Math.ceil(totalFeeds / +limit);
-    if (+page > totalPages) {
-      response.redirect(`/`);
-      return;
-    }
-
-    const feedItems = await this.usersService.feed(user.id, +page, +limit);
-    console.log(await this.usersService.countAllFollowingsById(user.id));
     return {
       user,
       csrfToken,
@@ -74,8 +76,8 @@ export class AppController {
       feedItems,
       totalFeeds,
       totalPages,
-      page: +page,
-      limit: +limit,
+      page: page,
+      limit: limit,
       totalFollowings: await this.usersService.countAllFollowingsById(user.id),
       totalFollowers: await this.usersService.countAllFollowersById(user.id),
       totalStatuses: await this.statusesService.countAllForUser(user.id),
@@ -126,7 +128,6 @@ export class AppController {
   @UseFilters(new ValidationExceptionFilter({ includes: ['email'] }))
   @Post('login')
   login(@Req() request, @Res() response) {
-    const id = request.user.id;
     request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
     response.redirect(`/`);
   }
