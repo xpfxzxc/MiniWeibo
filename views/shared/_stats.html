@@ -1,16 +1,16 @@
-<a href="#">
+<a href="/users/{{ u.id }}/followings">
   <strong id="following" class="stat">
     {{ totalFollowings }}
   </strong>
   关注
 </a>
-<a href="#">
+<a href="/users/{{ u.id }}/followers">
   <strong id="followers" class="stat">
     {{ totalFollowers }}
   </strong>
   粉丝
 </a>
-<a href="#">
+<a href="/users/{{ u.id }}">
   <strong id="statuses" class="stat">
     {{ totalStatuses }}
   </strong>

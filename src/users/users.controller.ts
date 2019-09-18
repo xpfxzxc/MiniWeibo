@@ -33,6 +33,7 @@ import { IndexUserDto } from './dto/index-user.dto';
 import { PaginationQueryExceptionFilter } from '../common/filters/pagination-query-exception.filter';
 import { PaginationQueryException } from '../common/exceptions/pagination-query.exception';
 import { ShowUserDto } from './dto/show-user.dto';
+import { ShowFollowerDto } from './dto/show-follower.dto';
 
 @Controller('users')
 export class UsersController {
@@ -185,5 +186,93 @@ export class UsersController {
       request.flash('msg', { success: '成功删除用户' });
     }
     response.redirect('back');
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @UseFilters(PaginationQueryExceptionFilter)
+  @Get(':id/followings')
+  @Render('users/show-follow.html')
+  async followings(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        exceptionFactory: errors => new PaginationQueryException(),
+      }),
+    )
+    showFollowerDto: ShowFollowerDto,
+    @CSRFToken() csrfToken: string,
+  ) {
+    const { page = 1, limit = 10 } = showFollowerDto;
+    const {
+      items: users,
+      itemCount: userCount,
+      totalItems: totalUsers,
+      pageCount: totalPages,
+    } = await this.usersService.paginateFollowings(id, { page, limit });
+
+    if (page !== 1 && userCount === 0) {
+      throw new PaginationQueryException();
+    }
+
+    const u = await this.usersService.findOneById(id);
+
+    return {
+      user,
+      csrfToken,
+      title: `${u.name}关注的人`,
+      u,
+      users,
+      totalUsers,
+      totalPages,
+      page,
+      limit,
+      urlPostfix: 'followings',
+    };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @UseFilters(PaginationQueryExceptionFilter)
+  @Get(':id/followers')
+  @Render('users/show-follow.html')
+  async followers(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+    @Query(
+      new ValidationPipe({
+        transform: true,
+        exceptionFactory: errors => new PaginationQueryException(),
+      }),
+    )
+    showFollowerDto: ShowFollowerDto,
+    @CSRFToken() csrfToken: string,
+  ) {
+    const { page = 1, limit = 10 } = showFollowerDto;
+    const {
+      items: users,
+      itemCount: userCount,
+      totalItems: totalUsers,
+      pageCount: totalPages,
+    } = await this.usersService.paginateFollowers(id, { page, limit });
+
+    if (page !== 1 && userCount === 0) {
+      throw new PaginationQueryException();
+    }
+
+    const u = await this.usersService.findOneById(id);
+
+    return {
+      user,
+      csrfToken,
+      title: `${u.name}的粉丝`,
+      u,
+      users,
+      totalUsers,
+      totalPages,
+      page,
+      limit,
+      urlPostfix: 'followers',
+    };
   }
 }

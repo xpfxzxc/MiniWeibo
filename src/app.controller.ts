@@ -23,7 +23,7 @@ import { UsersService } from './users/users.service';
 import { StatusesService } from './statuses/statuses.service';
 import { PaginationQueryExceptionFilter } from './common/filters/pagination-query-exception.filter';
 import { PaginationQueryException } from './common/exceptions/pagination-query.exception';
-import { IndexDto } from './appDto/index.dto';
+import { IndexDto } from './dto/index.dto';
 
 @Controller()
 export class AppController {

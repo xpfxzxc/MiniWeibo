@@ -1,0 +1,25 @@
+{% extends "layouts/_base.html" %}
+
+{% block content %}
+  <div class="col-md-8 offset-md-2">
+    <h2 class="mb-4 text-center">{{ title }}</h2>
+
+    {% if users.length > 0 %}  
+      {% for userItem in users %}  
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          <img src="{{ userItem.gravatar(36) }}" class="mr-3" alt="{{ userItem.name }}">
+          <a href="/users/{{ userItem.id }}">{{ userItem.name }}</a>
+        </li>
+      </ul>
+      {% endfor %}
+      
+      <div class="mt-4">
+        {% set urlPrefix = 'users/' + u.id + '/' + urlPostfix %}
+        {% include "shared/_pagination.html" %}
+      </div>
+    {% else %}
+      没有数据！
+    {% endif %}
+  </div>
+{% endblock %}

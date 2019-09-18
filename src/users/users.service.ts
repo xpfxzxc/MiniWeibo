@@ -97,4 +97,26 @@ export class UsersService {
       .where('follower.id = :id', { id })
       .getCount();
   }
+
+  async paginateFollowings(
+    id: number,
+    options: IPaginationOptions,
+  ): Promise<Pagination<User>> {
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.followings', 'following')
+      .where('following.id = :id', { id });
+    return paginate<User>(queryBuilder, options);
+  }
+
+  async paginateFollowers(
+    id: number,
+    options: IPaginationOptions,
+  ): Promise<Pagination<User>> {
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.followers', 'follower')
+      .where('follower.id = :id', { id });
+    return paginate<User>(queryBuilder, options);
+  }
 }
