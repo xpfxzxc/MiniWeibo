@@ -5,6 +5,8 @@ import {
   Unique,
   BeforeInsert,
   OneToMany,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
 import md5 = require('blueimp-md5');
 import bcrypt = require('bcrypt');
@@ -34,6 +36,17 @@ export class User {
 
   @OneToMany(type => Status, status => status.user)
   statuses: Status[];
+
+  @ManyToMany(type => User, user => user.followings)
+  @JoinTable({
+    name: 'follower',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'follower_id', referencedColumnName: 'id' },
+  })
+  followers: User[];
+
+  @ManyToMany(type => User, user => user.followers)
+  followings: User[];
 
   @BeforeInsert()
   async beforeInsert() {
