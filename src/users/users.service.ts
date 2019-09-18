@@ -78,4 +78,20 @@ export class UsersService {
   async countAllFeedsById(userId: number): Promise<number> {
     return this.statusesService.countAllForUser(userId);
   }
+
+  async countAllFollowingsById(id: number): Promise<number> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.followings', 'following')
+      .where('following.id = :id', { id })
+      .getCount();
+  }
+
+  async countAllFollowersById(id: number): Promise<number> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.followers', 'follower')
+      .where('follower.id = :id', { id })
+      .getCount();
+  }
 }

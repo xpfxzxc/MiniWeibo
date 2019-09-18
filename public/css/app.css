@@ -42,3 +42,27 @@ nav.navbar.navbar-expand {
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
+/* stats */
+.stats {
+  overflow: hidden;
+}
+
+.stats a {
+  float: left;
+  width: 33%;
+  border-left: 1px solid #eee;
+  color: #33383c;
+  text-decoration: none;
+  text-align: center;
+}
+
+.stats a:first-child {
+  border-left: 0;
+}
+
+.stat {
+  display: block;
+  color: #000;
+  font-size: 1.25em;
+}

@@ -4,25 +4,29 @@
 
 {% block content %}
   <div class="col-md-8 offset-md-2">
-    <div class="row justify-content-center">
+    <div class="justify-content-center">
       <section class="user_info">
         {% include "shared/_user-info.html" %}
       </section>
+      <section class="stats mt-4">
+        {% include "shared/_stats.html" %}
+      </section>
     </div>
-    <div class="row">
+    <hr>
+    <section class="status">
       {% if statuses.length > 0 %}  
-        <section class="status">
-          <ul class="list-unstyled">
-            {% for status in statuses %}
-              {% include "statuses/_status.html" %}
-            {% endfor %}
-          </ul>
-        </section>
-        {% set urlPrefix = 'users/' + u.id %}
-        {% include "shared/_pagination.html" %}
+        <ul class="list-unstyled">
+          {% for status in statuses %}
+            {% include "statuses/_status.html" %}
+          {% endfor %}
+        </ul>
+        <div class="mt-4">
+          {% set urlPrefix = 'users/' + u.id %}
+          {% include "shared/_pagination.html" %}
+        </div>
       {% else %}
         没有数据！
       {% endif %}
-    </div>
+    </section>
   </div>
 {% endblock %}

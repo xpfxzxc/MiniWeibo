@@ -102,6 +102,8 @@ export class UsersController {
       totalPages,
       page: +page,
       limit: +limit,
+      totalFollowings: await this.usersService.countAllFollowingsById(id),
+      totalFollowers: await this.usersService.countAllFollowersById(id),
     };
   }
 

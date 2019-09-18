@@ -19,12 +19,14 @@ import { ValidationExceptionFilter } from './common/filters/validation-exception
 import { User as UserEntity } from './users/user.entity';
 import { User } from './common/decorators/user.decorator';
 import { UsersService } from './users/users.service';
+import { StatusesService } from './statuses/statuses.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly usersService: UsersService,
+    private readonly statusesService: StatusesService,
   ) {}
 
   @Get()
@@ -62,6 +64,7 @@ export class AppController {
     }
 
     const feedItems = await this.usersService.feed(user.id, +page, +limit);
+    console.log(await this.usersService.countAllFollowingsById(user.id));
     return {
       user,
       csrfToken,
@@ -73,6 +76,9 @@ export class AppController {
       totalPages,
       page: +page,
       limit: +limit,
+      totalFollowings: await this.usersService.countAllFollowingsById(user.id),
+      totalFollowers: await this.usersService.countAllFollowersById(user.id),
+      totalStatuses: await this.statusesService.countAllForUser(user.id),
     };
   }
 
