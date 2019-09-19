@@ -69,4 +69,11 @@ export class StatusesService {
       .orderBy('status.createdAt', 'DESC');
     return paginate<Status>(queryBuilder, options);
   }
+
+  async getUserIdOf(id: number): Promise<number> {
+    return (await this.statusRepository.findOne({
+      relations: ['user'],
+      where: { id },
+    })).user.id;
+  }
 }

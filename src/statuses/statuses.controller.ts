@@ -9,6 +9,7 @@ import {
   Param,
   ParseIntPipe,
   Delete,
+  ForbiddenException,
 } from '@nestjs/common';
 import { StatusesService } from './statuses.service';
 import { ValidationFeedbackPipe } from '../common/pipes/validation-feedback.pipe';
@@ -39,10 +40,15 @@ export class StatusesController {
   @UseGuards(AuthenticatedGuard)
   @Delete(':id')
   async destroy(
+    @User() user: UserEntity,
     @Param('id', ParseIntPipe) id: number,
     @Request() request,
     @Res() response,
   ) {
+    if (user.id !== (await this.statusesService.getUserIdOf(id))) {
+      throw new ForbiddenException();
+    }
+
     if (await this.statusesService.destroy(id)) {
       request.flash('msg', { success: '微博已被成功删除！' });
     }
