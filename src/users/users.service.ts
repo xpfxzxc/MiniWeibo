@@ -4,8 +4,6 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { StatusesService } from '../statuses/statuses.service';
-import { Status } from '../statuses/status.entity';
 import {
   paginate,
   Pagination,
@@ -18,7 +16,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly statusesService: StatusesService,
   ) {}
 
   async store(storeUserDto: StoreUserDto): Promise<User> {
@@ -71,17 +68,6 @@ export class UsersService {
     return false;
   }
 
-  async feed(
-    id: number,
-    options: IPaginationOptions,
-  ): Promise<Pagination<Status>> {
-    return this.statusesService.paginateForUser(id, options);
-  }
-
-  async countAllFeedsById(userId: number): Promise<number> {
-    return this.statusesService.countAllForUser(userId);
-  }
-
   async countAllFollowingsById(id: number): Promise<number> {
     return this.userRepository
       .createQueryBuilder('user')
@@ -118,5 +104,12 @@ export class UsersService {
       .innerJoin('user.followings', 'following')
       .where('following.id = :id', { id });
     return paginate<User>(queryBuilder, options);
+  }
+
+  async getAllFollowingsIdsById(id: number): Promise<number[]> {
+    return (await this.userRepository.findOne({
+      relations: ['followings'],
+      where: { id },
+    })).followings.map(following => following.id);
   }
 }

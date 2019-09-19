@@ -61,7 +61,7 @@ export class AppController {
       itemCount: feedCount,
       totalItems: totalFeeds,
       pageCount: totalPages,
-    } = await this.usersService.feed(user.id, { page, limit });
+    } = await this.statusesService.paginateFeed(user.id, { page, limit });
 
     if (page !== 1 && feedCount === 0) {
       throw new PaginationQueryException();

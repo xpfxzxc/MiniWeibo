@@ -9,12 +9,14 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class StatusesService {
   constructor(
     @InjectRepository(Status)
     private readonly statusRepository: Repository<Status>,
+    private readonly usersService: UsersService,
   ) {}
 
   async countAllForUser(userId: number): Promise<number> {
@@ -51,5 +53,20 @@ export class StatusesService {
       return true;
     }
     return false;
+  }
+
+  async paginateFeed(
+    userId: number,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Status>> {
+    const userIds = await this.usersService.getAllFollowingsIdsById(userId);
+    userIds.push(userId);
+
+    const queryBuilder = this.statusRepository
+      .createQueryBuilder('status')
+      .innerJoinAndSelect('status.user', 'user')
+      .where('status.user_id IN (:...id)', { id: userIds })
+      .orderBy('status.createdAt', 'DESC');
+    return paginate<Status>(queryBuilder, options);
   }
 }

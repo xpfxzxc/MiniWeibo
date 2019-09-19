@@ -1,7 +1,7 @@
 {% if feedItems.length %}
   <ul class="list-unstyled">
     {% for status in feedItems %}
-      {% set u = user %}
+      {% set u = status.user %}
       {% include "statuses/_status.html" %}
     {% endfor %}
   </ul>
