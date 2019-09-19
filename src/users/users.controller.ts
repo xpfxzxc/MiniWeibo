@@ -34,12 +34,14 @@ import { PaginationQueryExceptionFilter } from '../common/filters/pagination-que
 import { PaginationQueryException } from '../common/exceptions/pagination-query.exception';
 import { ShowUserDto } from './dto/show-user.dto';
 import { ShowFollowerDto } from './dto/show-follower.dto';
+import { FollowersService } from '../followers/followers.service';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly statusesService: StatusesService,
+    private readonly followersService: FollowersService,
   ) {}
 
   @Post()
@@ -105,6 +107,7 @@ export class UsersController {
       limit,
       totalFollowings: await this.usersService.countAllFollowingsById(id),
       totalFollowers: await this.usersService.countAllFollowersById(id),
+      isFollowing: await this.followersService.isFollowing(id, user.id),
     };
   }
 

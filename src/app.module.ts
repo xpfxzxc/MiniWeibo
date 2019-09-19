@@ -8,6 +8,7 @@ import { Session } from './session/session.entity';
 import { AuthModule } from './auth/auth.module';
 import { RedirectIfAuthenticatedMiddleware } from './common/middlewares/redirect-if-authenticated.middleware';
 import { StatusesModule } from './statuses/statuses.module';
+import { FollowersModule } from './followers/followers.module';
 import * as path from 'path';
 
 @Module({
@@ -21,6 +22,7 @@ import * as path from 'path';
     UsersModule,
     AuthModule,
     StatusesModule,
+    FollowersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

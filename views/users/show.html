@@ -8,6 +8,9 @@
       <section class="user_info">
         {% include "shared/_user-info.html" %}
       </section>
+      {% if user.id !== u.id %}
+        {% include "users/_follow_form.html" %}
+      {% endif %}
       <section class="stats mt-4">
         {% include "shared/_stats.html" %}
       </section>

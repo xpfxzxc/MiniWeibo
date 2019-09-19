@@ -1,0 +1,16 @@
+{% import "shared/_field.html" as field %}
+
+<div class="text-center my-4">
+  {% if isFollowing %}
+    <form action="/users/followers/{{ u.id }}" method="POST">
+      {{ field.method('DELETE') }}
+      {% include "shared/_csrf.html" %}
+      <button type="submit" class="btn btn-outline-primary">取消关注</button>
+    </form>
+  {% else %}
+    <form action="/users/followers/{{ u.id }}" method="POST">
+      {% include "shared/_csrf.html" %}
+      <button type="submit" class="btn btn-primary">关注</button>
+    </form>
+  {% endif %}
+</div>
