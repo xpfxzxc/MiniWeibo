@@ -12,11 +12,11 @@ export class statusTableSeeder1568533192285 implements MigrationInterface {
       const status = new Status();
       status.content = faker.lorem.paragraph();
       status.user = await userRepository.findOne(userId);
-      statusRepository.save(status);
+      await statusRepository.save(status);
     }
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
-    queryRunner.clearTable('status');
+    await queryRunner.clearTable('status');
   }
 }
