@@ -32,6 +32,10 @@ nav.navbar.navbar-expand {
   letter-spacing: -1px;
 }
 
+.user_info p {
+  word-break: break-all;
+}
+
 .user_info .gravatar {
   padding-bottom: 10px;
   margin-top: 5px;

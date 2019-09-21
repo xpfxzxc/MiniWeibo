@@ -2,3 +2,4 @@
   <img src="{{ u.gravatar(gravatarSize) }}" alt="{{ u.name }}" class="gravatar">
 </a>
 <h1>{{ u.name }}</h1>
+<p class="text-muted">{{ u.email }}{{'(未认证)' if not u.activated }}</p>
