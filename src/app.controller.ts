@@ -26,11 +26,13 @@ import { PaginationQueryException } from './common/exceptions/pagination-query.e
 import { IndexDto } from './dto/index.dto';
 import * as svgCaptcha from 'svg-captcha';
 import { CaptchaGuard } from './common/guards/captcha.guard';
+import { ConfigService } from 'nestjs-config';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
+    private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly statusesService: StatusesService,
   ) {}
@@ -143,14 +145,7 @@ export class AppController {
 
   @Get('/captcha')
   captcha(@Request() request, @Res() response) {
-    const captcha = svgCaptcha.create({
-      size: 6,
-      ignoreChars: '0o1lI',
-      noise: 1,
-      width: 200,
-      color: true,
-      background: '#ecf2f4',
-    });
+    const captcha = svgCaptcha.create(this.configService.get('captcha'));
     request.session.captcha = captcha.text;
     response.type('svg').send(captcha.data);
   }

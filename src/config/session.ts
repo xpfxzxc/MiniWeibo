@@ -1,3 +1,3 @@
 export default {
-  secret: 'a secret',
+  secret: process.env.SESSION_SECRET,
 };

@@ -1,11 +1,11 @@
 export = [
   {
     type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: 'root',
-    database: 'miniweibo',
+    host: process.env.TYPEORM_HOST,
+    port: parseInt(process.env.TYPEORM_PORT),
+    username: process.env.TYPEORM_USERNAME,
+    password: process.env.TYPEORM_PASSWORD,
+    database: process.env.TYPEORM_DATABASE,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../migrations/*.ts'],
     cli: {
@@ -15,11 +15,11 @@ export = [
   {
     name: 'seed',
     type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: 'root',
-    database: 'miniweibo',
+    host: process.env.TYPEORM_HOST,
+    port: parseInt(process.env.TYPEORM_PORT),
+    username: process.env.TYPEORM_USERNAME,
+    password: process.env.TYPEORM_PASSWORD,
+    database: process.env.TYPEORM_DATABASE,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrationsTableName: 'seeds',
     migrations: [__dirname + '/../seeds/*.ts'],
