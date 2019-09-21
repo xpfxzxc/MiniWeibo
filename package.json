@@ -55,6 +55,7 @@
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.3.3",
+    "svg-captcha": "^1.4.0",
     "typeorm": "^0.2.18",
     "typeorm-static": "^1.1.1"
   },
