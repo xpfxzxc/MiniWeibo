@@ -48,7 +48,6 @@ async function bootstrap() {
       store: new TypeormStore().connect(appService.sessionRepository),
       cookie: {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 4,
       },
     }),
   );
