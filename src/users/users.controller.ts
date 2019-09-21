@@ -35,6 +35,7 @@ import { PaginationQueryException } from '../common/exceptions/pagination-query.
 import { ShowUserDto } from './dto/show-user.dto';
 import { ShowFollowerDto } from './dto/show-follower.dto';
 import { FollowersService } from '../followers/followers.service';
+import { CaptchaGuard } from '../common/guards/captcha.guard';
 
 @Controller('users')
 export class UsersController {
@@ -44,6 +45,7 @@ export class UsersController {
     private readonly followersService: FollowersService,
   ) {}
 
+  @UseGuards(CaptchaGuard)
   @Post()
   @UseFilters(
     new ValidationExceptionFilter({

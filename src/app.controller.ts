@@ -24,6 +24,8 @@ import { StatusesService } from './statuses/statuses.service';
 import { PaginationQueryExceptionFilter } from './common/filters/pagination-query-exception.filter';
 import { PaginationQueryException } from './common/exceptions/pagination-query.exception';
 import { IndexDto } from './dto/index.dto';
+import * as svgCaptcha from 'svg-captcha';
+import { CaptchaGuard } from './common/guards/captcha.guard';
 
 @Controller()
 export class AppController {
@@ -124,7 +126,7 @@ export class AppController {
     };
   }
 
-  @UseGuards(LoginGuard)
+  @UseGuards(CaptchaGuard, LoginGuard)
   @UseFilters(new ValidationExceptionFilter({ includes: ['email'] }))
   @Post('login')
   login(@Req() request, @Res() response) {
@@ -137,5 +139,19 @@ export class AppController {
   logout(@Request() request) {
     request.logout();
     request.flash('msg', { success: '您已成功退出登录！' });
+  }
+
+  @Get('/captcha')
+  captcha(@Request() request, @Res() response) {
+    const captcha = svgCaptcha.create({
+      size: 6,
+      ignoreChars: '0o1lI',
+      noise: 1,
+      width: 200,
+      color: true,
+      background: '#ecf2f4',
+    });
+    request.session.captcha = captcha.text;
+    response.type('svg').send(captcha.data);
   }
 }
