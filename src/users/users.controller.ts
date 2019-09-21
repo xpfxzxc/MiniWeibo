@@ -36,6 +36,7 @@ import { ShowUserDto } from './dto/show-user.dto';
 import { ShowFollowerDto } from './dto/show-follower.dto';
 import { FollowersService } from '../followers/followers.service';
 import { CaptchaGuard } from '../common/guards/captcha.guard';
+import { MailerService } from '@nest-modules/mailer';
 
 @Controller('users')
 export class UsersController {
@@ -43,6 +44,7 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly statusesService: StatusesService,
     private readonly followersService: FollowersService,
+    private readonly mailerService: MailerService,
   ) {}
 
   @UseGuards(CaptchaGuard)
@@ -58,14 +60,22 @@ export class UsersController {
     @Res() response,
   ) {
     const user = await this.usersService.store(storeUserDto);
-    request.login(user, err => {
-      if (err) {
-        console.log(err);
-      } else {
-        request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
-        response.redirect(`/users/${user.id}`);
-      }
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: '感谢注册 Mini Weibo 应用！请确认你的邮箱',
+      template: 'confirm',
+      context: {
+        protocol: request.protocol,
+        host: request.get('host'),
+        token: user.activationToken,
+      },
     });
+
+    request.flash('msg', {
+      success: '验证邮件已发送到你的注册邮箱上，请注意查收',
+    });
+    response.redirect('/');
   }
 
   @UseGuards(AuthenticatedGuard)

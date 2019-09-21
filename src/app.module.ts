@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { RedirectIfAuthenticatedMiddleware } from './common/middlewares/redirect-if-authenticated.middleware';
 import { StatusesModule } from './statuses/statuses.module';
 import { FollowersModule } from './followers/followers.module';
+import { MailerModule } from '@nest-modules/mailer';
 import * as path from 'path';
 
 @Module({
@@ -16,6 +17,10 @@ import * as path from 'path';
     ConfigModule.load(path.resolve(__dirname, 'config', '**/!(*.d).{ts,js}')),
     TypeOrmModule.forRootAsync({
       useFactory: (config: ConfigService) => config.get('database')[0],
+      inject: [ConfigService],
+    }),
+    MailerModule.forRootAsync({
+      useFactory: (config: ConfigService) => config.get('mail'),
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([Session]),

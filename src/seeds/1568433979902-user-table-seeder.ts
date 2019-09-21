@@ -11,6 +11,7 @@ export class userTableSeeder1568433979902 implements MigrationInterface {
       user.name = faker.name.firstName() + ' ' + faker.name.lastName();
       user.email = faker.internet.email();
       user.password = '123456';
+      user.activated = true;
       users.push(user);
     }
     await userRepository.save(users);

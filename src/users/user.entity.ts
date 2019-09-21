@@ -34,6 +34,18 @@ export class User {
   })
   isAdmin: boolean;
 
+  @Column({
+    name: 'activation_token',
+    nullable: true,
+  })
+  activationToken: string;
+
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  activated: boolean;
+
   @OneToMany(type => Status, status => status.user)
   statuses: Status[];
 
@@ -51,6 +63,9 @@ export class User {
   @BeforeInsert()
   async beforeInsert() {
     this.password = await bcrypt.hash(this.password, 10);
+    this.activationToken = Math.random()
+      .toString(36)
+      .substr(2);
   }
 
   gravatar(size: number = 100): string {

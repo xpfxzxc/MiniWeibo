@@ -11,6 +11,8 @@ import {
   Redirect,
   Query,
   ValidationPipe,
+  NotFoundException,
+  Param,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CSRFToken } from './common/decorators/csrf-token.decorator';
@@ -131,8 +133,15 @@ export class AppController {
   @UseGuards(CaptchaGuard, LoginGuard)
   @UseFilters(new ValidationExceptionFilter({ includes: ['email'] }))
   @Post('login')
-  login(@Req() request, @Res() response) {
-    request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
+  login(@User() user: UserEntity, @Req() request, @Res() response) {
+    if (user.activated) {
+      request.flash('msg', { success: '欢迎，您将在这里开启一段新的旅程~' });
+    } else {
+      request.logout();
+      request.flash('msg', {
+        warning: '你的账号未激活，请检查邮箱中的注册邮件进行激活',
+      });
+    }
     response.redirect(`/`);
   }
 
@@ -148,5 +157,26 @@ export class AppController {
     const captcha = svgCaptcha.create(this.configService.get('captcha'));
     request.session.captcha = captcha.text;
     response.type('svg').send(captcha.data);
+  }
+
+  @Get('register/confirm/:token')
+  async confirmEmail(
+    @Param('token') token: string,
+    @Request() request,
+    @Res() response,
+  ) {
+    const user = await this.usersService.activateUserByToken(token);
+    if (user) {
+      request.flash('msg', { success: '恭喜你，激活成功' });
+      await new Promise(resolve => {
+        request.logIn(user, err => {
+          if (err) console.log(err);
+          response.redirect(`/users/${user.id}`);
+          resolve();
+        });
+      });
+    } else {
+      throw new NotFoundException();
+    }
   }
 }

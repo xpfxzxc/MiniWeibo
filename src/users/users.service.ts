@@ -112,4 +112,16 @@ export class UsersService {
       where: { id },
     })).followings.map(following => following.id);
   }
+
+  async activateUserByToken(token: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      activationToken: token,
+    });
+    if (user) {
+      user.activationToken = null;
+      user.activated = true;
+      await this.userRepository.save(user);
+    }
+    return user;
+  }
 }
