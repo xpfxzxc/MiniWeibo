@@ -1,6 +1,6 @@
 export = [
   {
-    type: 'mysql',
+    type: process.env.TYPEORM_DB_TYPE,
     host: process.env.TYPEORM_HOST,
     port: parseInt(process.env.TYPEORM_PORT),
     username: process.env.TYPEORM_USERNAME,
@@ -14,7 +14,7 @@ export = [
   },
   {
     name: 'seed',
-    type: 'mysql',
+    type: process.env.TYPEORM_CONNECTION,
     host: process.env.TYPEORM_HOST,
     port: parseInt(process.env.TYPEORM_PORT),
     username: process.env.TYPEORM_USERNAME,
