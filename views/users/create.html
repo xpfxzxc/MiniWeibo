@@ -26,11 +26,7 @@
             <label for="password_confirmation">确认密码：</label>
             <input type="password" class="form-control" name="password_confirmation">
           </div>
-          <div class="form-group">
-            <label for="captcha">验证码：</label>
-            <input type="input" class="form-control" name="captcha">
-            <img class="img-thumbnail captcha mt-3 mb-2" src="/captcha" onclick="this.src='/captcha?' + Math.random()" title="点击图片重新获取验证码"></img>
-          </div>
+          {% include "shared/_captcha.html" %}
           <button type="submit" class="btn btn-primary">注册</button>
         </form>
       </div>
