@@ -122,11 +122,13 @@ export class AppController {
     @CSRFToken() csrfToken: string,
     @Flash('errors') errors,
     @Flash('old') old,
+    @Flash('msg') msg,
   ) {
     return {
       csrfToken,
       errors,
       old,
+      msg,
     };
   }
 

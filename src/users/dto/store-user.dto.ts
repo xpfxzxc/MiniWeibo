@@ -17,7 +17,7 @@ export class StoreUserDto {
   @MaxLength(255, {
     message: '邮箱地址至多为 $constraint1 个字符',
   })
-  @IsUserAlreadyExist({
+  @IsUserAlreadyExist(false, {
     message: '邮箱已经被注册过了',
   })
   readonly email: string;

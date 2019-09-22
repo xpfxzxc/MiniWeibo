@@ -124,4 +124,10 @@ export class UsersService {
     }
     return user;
   }
+
+  async updateUserByEmail(email: string, newPassword: string): Promise<void> {
+    const user = await this.userRepository.findOne({ email });
+    user.password = await bcrypt.hash(newPassword, 10);
+    await this.userRepository.save(user);
+  }
 }

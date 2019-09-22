@@ -15,18 +15,22 @@ export class IsUserAlreadyExistConstraint
   constructor(private readonly usersService: UsersService) {}
 
   async validate(email: any, args: ValidationArguments): Promise<boolean> {
-    return !(await this.usersService.isUserAlreadyExist(email));
+    const [yesOrNo] = args.constraints;
+    return (await this.usersService.isUserAlreadyExist(email)) === yesOrNo;
   }
 }
 
-export function IsUserAlreadyExist(validationOptions: ValidationOptions) {
+export function IsUserAlreadyExist(
+  yesOrNo: boolean,
+  validationOptions: ValidationOptions,
+) {
   return function(object: Object, propertyName: string) {
     registerDecorator({
       name: 'isUserAlreadyExist',
       target: object.constructor,
       propertyName,
       options: validationOptions,
-      constraints: [],
+      constraints: [yesOrNo],
       validator: IsUserAlreadyExistConstraint,
     });
   };
