@@ -20,7 +20,7 @@
         </div>
         {% include "shared/_captcha.html" %}
         <div class="form-group form-check">
-          <input type="checkbox" class="form-check-input" name="remember" id="remember">
+          <input type="checkbox" class="form-check-input" name="remember" id="remember" {{ "checked" if old['remember'] }}>
           <label class="form-check-label" for="remember">30 天内免登录</label>
         </div>
         <button type="submit" class="btn btn-primary">登录</button>

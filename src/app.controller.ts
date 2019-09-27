@@ -133,7 +133,9 @@ export class AppController {
   }
 
   @UseGuards(CaptchaGuard, LoginGuard)
-  @UseFilters(new ValidationExceptionFilter({ includes: ['email'] }))
+  @UseFilters(
+    new ValidationExceptionFilter({ includes: ['email', 'remember'] }),
+  )
   @Post('login')
   login(@User() user: UserEntity, @Req() request, @Res() response) {
     if (user.activated) {

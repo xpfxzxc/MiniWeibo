@@ -21,4 +21,7 @@ export class UpdateUserDto {
 
   @Allow()
   readonly password_confirmation: string;
+
+  @Allow()
+  readonly remember: boolean;
 }
