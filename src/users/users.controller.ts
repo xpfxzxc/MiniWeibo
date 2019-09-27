@@ -62,21 +62,29 @@ export class UsersController {
   ) {
     const user = await this.usersService.store(storeUserDto);
 
-    await this.mailerService.sendMail({
-      to: user.email,
-      subject: '感谢注册 Mini Weibo 应用！请确认你的邮箱',
-      template: 'confirm',
-      context: {
-        protocol: request.protocol,
-        host: request.get('host'),
-        token: user.activationToken,
-      },
-    });
-
-    request.flash('msg', {
-      success: '验证邮件已发送到你的注册邮箱上，请注意查收',
-    });
-    response.redirect('/');
+    await this.mailerService
+      .sendMail({
+        to: user.email,
+        subject: '感谢注册 Mini Weibo 应用！请确认你的邮箱',
+        template: 'confirm',
+        context: {
+          protocol: request.protocol,
+          host: request.get('host'),
+          token: user.activationToken,
+        },
+      })
+      .catch(async () => {
+        await this.usersService.destroy(user.id);
+        request.flash('msg', {
+          danger: '验证邮件发送失败，请稍后再试或联系管理员！',
+        });
+      })
+      .then(() => {
+        request.flash('msg', {
+          success: '验证邮件已发送到你的注册邮箱上，请注意查收',
+        });
+        response.redirect('/');
+      });
   }
 
   @UseGuards(AuthenticatedGuard)
