@@ -13,6 +13,7 @@ import {
   Query,
   Delete,
   ValidationPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { StoreUserDto } from './dto/store-user.dto';
 import { UsersService } from './users.service';
@@ -95,6 +96,11 @@ export class UsersController {
     showUserDto: ShowUserDto,
     @Flash('msg') msg: object,
   ) {
+    const u = await this.usersService.findOneById(id);
+    if (!u) {
+      throw new NotFoundException();
+    }
+
     const { page = 1, limit = 5 } = showUserDto;
     const {
       items: statuses,
@@ -111,7 +117,7 @@ export class UsersController {
       user,
       msg,
       csrfToken,
-      u: await this.usersService.findOneById(id),
+      u,
       statuses,
       totalStatuses,
       totalPages,
