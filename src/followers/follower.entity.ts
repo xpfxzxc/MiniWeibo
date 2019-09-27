@@ -1,7 +1,7 @@
 import { Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from '../users/user.entity';
 
-@Entity('follower', { schema: 'miniweibo' })
+@Entity('follower')
 @Index('IDX_6a78a9c6f866dcc0b9195a5420', ['user'])
 @Index('IDX_c39c716bcdda7f17adcfe4643a', ['follower'])
 export class Follower {
