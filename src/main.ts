@@ -12,6 +12,8 @@ import flash = require('connect-flash');
 import passport = require('passport');
 import methodOverride = require('method-override');
 import nunjucks = require('nunjucks');
+import * as helmet from 'helmet';
+import * as rateLimit from 'express-rate-limit';
 import { HttpExceptionFilter } from './global/filters/http-exception.filter';
 
 async function bootstrap() {
@@ -26,6 +28,16 @@ async function bootstrap() {
     watch: true,
     express: app,
   });
+
+  app.use(helmet());
+
+  app.use(
+    rateLimit({
+      windowMs: 60000,
+      max: 50,
+      headers: false,
+    }),
+  );
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
