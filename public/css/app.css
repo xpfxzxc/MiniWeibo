@@ -70,3 +70,9 @@ nav.navbar.navbar-expand {
   color: #000;
   font-size: 1.25em;
 }
+
+/* error page */
+.page-wrap {
+  min-height: 100vh;
+  background: #dedede;
+}

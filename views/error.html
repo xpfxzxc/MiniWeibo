@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/app.css" type="text/css">
+    <title>{{ statusCode }} {{ message }} - Mini Weibo</title>
+  </head>
+  <body>
+    <div class="page-wrap d-flex flex-row align-items-center">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-12 text-center">
+            <span class="display-1 d-block">{{ statusCode }}</span>
+            <div class="mb-4 lead">{{ message }}</div>
+            <a href="/" class="btn btn-link">返回到首页</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -12,6 +12,7 @@ import flash = require('connect-flash');
 import passport = require('passport');
 import methodOverride = require('method-override');
 import nunjucks = require('nunjucks');
+import { HttpExceptionFilter } from './global/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -70,6 +71,8 @@ async function bootstrap() {
   app.use(flash());
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(process.env.PORT || 3000);
 }
